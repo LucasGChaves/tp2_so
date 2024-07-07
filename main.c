@@ -6,30 +6,36 @@
 #define READ 0
 #define WRITE 1
 
-unsigned int convertToByte(unsigned int numberInKB) {
+unsigned int convertToByte(unsigned int numberInKB)
+{
     return numberInKB * 1024;
 }
 
-unsigned int getAddrOffset(unsigned int pageSizeInBits) {
+unsigned int getAddrOffset(unsigned int pageSizeInBits)
+{
     unsigned int tmp = pageSizeInBits;
     unsigned int offset = 0;
-    while(tmp > 1) {
-        tmp = tmp>>1;
+    while (tmp > 1)
+    {
+        tmp = tmp >> 1;
         offset++;
     }
     return offset;
 }
 
-unsigned int getAddrPage(unsigned int addr, unsigned int offset) {
+unsigned int getAddrPage(unsigned int addr, unsigned int offset)
+{
     return addr >> offset;
 }
 
-unsigned int convertStrAddrToInt(char* addr) {
+unsigned int convertStrAddrToInt(char *addr)
+{
     unsigned int intAddr;
     sscanf(addr, "%x", &intAddr);
     return intAddr;
 }
 
+<<<<<<< HEAD
 int isReadOrWrite(char* line) {
     char* addr = strtok(line, " ");
     char* opType = strtok(NULL, " ");
@@ -47,6 +53,12 @@ char* getAddrFromLine(char* line) {
 
 int main(int argc, char *argv[]) {
     if (argc != 5) {
+=======
+int main(int argc, char *argv[])
+{
+    if (argc != 5)
+    {
+>>>>>>> c6f01ccc7e45790682eec110aabb38981a701f88
         printf("Uso: %s <algorithm> <file> <page_size> <memory_size>\n", argv[0]);
         return 1;
     }
@@ -57,12 +69,18 @@ int main(int argc, char *argv[]) {
 
     unsigned int offset = getAddrOffset(pageSizeInByte);
 
+<<<<<<< HEAD
     //for test purposes
     char line[100] = "004a3098 R";
     char lineCopy[100];
     char addr[100];
     strcpy(lineCopy, line);
     strcpy(addr, getAddrFromLine(line));
+=======
+    // for test purposes
+    char addrStr[100] = "004a3098";
+    unsigned int addrInt = convertStrAddrToInt(addrStr);
+>>>>>>> c6f01ccc7e45790682eec110aabb38981a701f88
 
     int type = isReadOrWrite(lineCopy);
     printf("Original address: %s\n", addr);

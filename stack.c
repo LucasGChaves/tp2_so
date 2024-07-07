@@ -49,7 +49,7 @@ int pop(Stack *stack)
     return data;
 }
 
-int peek(Stack *stack)
+int stack_peek(Stack *stack)
 {
     if (isEmpty(stack))
     {

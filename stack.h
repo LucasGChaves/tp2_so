@@ -17,7 +17,7 @@ Stack *createStack();
 int isEmpty(Stack *stack);
 void push(Stack *stack, int data);
 int pop(Stack *stack);
-int peek(Stack *stack);
+int stack_peek(Stack *stack);
 void freeStack(Stack *stack);
 
 #endif
