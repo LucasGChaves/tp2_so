@@ -35,7 +35,6 @@ unsigned int convertStrAddrToInt(char *addr)
     return intAddr;
 }
 
-<<<<<<< HEAD
 int isReadOrWrite(char* line) {
     char* addr = strtok(line, " ");
     char* opType = strtok(NULL, " ");
@@ -51,14 +50,10 @@ char* getAddrFromLine(char* line) {
     return strtok(line, " ");
 }
 
-int main(int argc, char *argv[]) {
-    if (argc != 5) {
-=======
 int main(int argc, char *argv[])
 {
     if (argc != 5)
     {
->>>>>>> c6f01ccc7e45790682eec110aabb38981a701f88
         printf("Uso: %s <algorithm> <file> <page_size> <memory_size>\n", argv[0]);
         return 1;
     }
@@ -69,24 +64,19 @@ int main(int argc, char *argv[])
 
     unsigned int offset = getAddrOffset(pageSizeInByte);
 
-<<<<<<< HEAD
     //for test purposes
     char line[100] = "004a3098 R";
     char lineCopy[100];
     char addr[100];
     strcpy(lineCopy, line);
     strcpy(addr, getAddrFromLine(line));
-=======
     // for test purposes
     char addrStr[100] = "004a3098";
     unsigned int addrInt = convertStrAddrToInt(addrStr);
->>>>>>> c6f01ccc7e45790682eec110aabb38981a701f88
 
     int type = isReadOrWrite(lineCopy);
     printf("Original address: %s\n", addr);
     printf("Type: %d\n", type);
-
-    unsigned int addrInt = convertStrAddrToInt(addr);
 
     unsigned int page = getAddrPage(addrInt, offset);
     printf("\n-------------------\n");
