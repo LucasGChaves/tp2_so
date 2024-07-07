@@ -1,3 +1,5 @@
+#include "linked_list.h"
+#include "stack.h"
 #include <stdio.h>
 
 unsigned int convertToByte(unsigned int numberInKB) {
