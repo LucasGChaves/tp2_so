@@ -1,6 +1,10 @@
 #include "linked_list.h"
 #include "stack.h"
 #include <stdio.h>
+#include <string.h>
+
+#define READ 0
+#define WRITE 1
 
 unsigned int convertToByte(unsigned int numberInKB) {
     return numberInKB * 1024;
@@ -26,6 +30,20 @@ unsigned int convertStrAddrToInt(char* addr) {
     return intAddr;
 }
 
+int isReadOrWrite(char* line) {
+    char* addr = strtok(line, " ");
+    char* opType = strtok(NULL, " ");
+
+    if(opType[0] == 'R') {
+        return READ;
+    }
+    
+    return WRITE;
+}
+
+char* getAddrFromLine(char* line) {
+    return strtok(line, " ");
+}
 
 int main(int argc, char *argv[]) {
     if (argc != 5) {
@@ -40,15 +58,23 @@ int main(int argc, char *argv[]) {
     unsigned int offset = getAddrOffset(pageSizeInByte);
 
     //for test purposes
-    char addrStr[100] = "004a3098";
-    unsigned int addrInt = convertStrAddrToInt(addrStr);
+    char line[100] = "004a3098 R";
+    char lineCopy[100];
+    char addr[100];
+    strcpy(lineCopy, line);
+    strcpy(addr, getAddrFromLine(line));
+
+    int type = isReadOrWrite(lineCopy);
+    printf("Original address: %s\n", addr);
+    printf("Type: %d\n", type);
+
+    unsigned int addrInt = convertStrAddrToInt(addr);
 
     unsigned int page = getAddrPage(addrInt, offset);
-
+    printf("\n-------------------\n");
     printf("Page size in KB: %d\n", pageSizeInKB);
     printf("Page size in bytes: %d\n", pageSizeInByte);
     printf("Offset: %d\n", offset);
     printf("Address in HEX(int=%d): %x\n", addrInt, addrInt);
     printf("Page in HEX(int=%d): %x\n", page, page);
-
 }
