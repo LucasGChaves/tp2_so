@@ -1,10 +1,8 @@
 #include "linked_list.h"
 #include "stack.h"
+#include "data_structs.h"
 #include <stdio.h>
 #include <string.h>
-
-#define READ 0
-#define WRITE 1
 
 unsigned int convertToByte(unsigned int numberInKB)
 {
@@ -47,7 +45,9 @@ int isReadOrWrite(char* line) {
 }
 
 char* getAddrFromLine(char* line) {
-    return strtok(line, " ");
+    char lineCopy[100];
+    strcpy(lineCopy, line);
+    return strtok(lineCopy, " ");
 }
 
 int main(int argc, char *argv[])
@@ -64,20 +64,15 @@ int main(int argc, char *argv[])
 
     unsigned int offset = getAddrOffset(pageSizeInByte);
 
-    //for test purposes
     char line[100] = "004a3098 R";
-    char lineCopy[100];
     char addr[100];
-    strcpy(lineCopy, line);
     strcpy(addr, getAddrFromLine(line));
-    // for test purposes
-    char addrStr[100] = "004a3098";
-    unsigned int addrInt = convertStrAddrToInt(addrStr);
+    int type = isReadOrWrite(line);
 
-    int type = isReadOrWrite(lineCopy);
     printf("Original address: %s\n", addr);
     printf("Type: %d\n", type);
 
+    unsigned int addrInt = convertStrAddrToInt(addr);
     unsigned int page = getAddrPage(addrInt, offset);
     printf("\n-------------------\n");
     printf("Page size in KB: %d\n", pageSizeInKB);
