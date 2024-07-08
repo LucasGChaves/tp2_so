@@ -17,7 +17,7 @@ Table createTable(unsigned int tablePageSize, unsigned int pageSizeInBytes) {
     return table;
 }
 
-int insertIntoTable(Table *table, unsigned int addr, int opType, unsigned int page) {
+int writeIntoTable(Table *table, unsigned int addr, int opType, unsigned int page) {
     int pageFound = 0;
 
     for(int i=0; i<table->size; i++) {
