@@ -7,12 +7,9 @@ typedef struct Page
 {
     int id;
     LinkedList *addrs;
-    long int last_access_time;
-    int was_edited;
-    int maxSize;
+    long int lastAccessTime;
+    int wasEdited;
     int currentSize;
-    int base;
-    int limit;
 
 } Page;
 

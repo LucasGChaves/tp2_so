@@ -5,5 +5,6 @@ typedef struct Table
 {
     Page* pages;
     int size;
-    int occupiedSlots;
+    int lastSlotOccupied;
+    int pagesMaxSize;
 } Table;
