@@ -3,7 +3,7 @@
 
 typedef struct Page
 {
-    char id;
+    int id;
     long int last_access_time;
     int was_edited;
     int isEmpty;
