@@ -1,5 +1,5 @@
 # Nome do executável
-EXECUTABLE = prog
+EXECUTABLE = tp2virtual
 
 # Compilador C
 CC = gcc
