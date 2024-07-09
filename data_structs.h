@@ -1,4 +1,6 @@
 #include "linked_list.h"
+#include <time.h>
+
 #ifndef DATA_STRUCT
 #define DATA_STRUCT
 #define READ 0
@@ -7,7 +9,7 @@ typedef struct Page
 {
     int id;
     LinkedList *addrs;
-    long int lastAccessTime;
+    time_t lastAccessTime; // user difftime(time1, time0) para comparar. Se positivo, time1 é mais tarde que time2
     int wasEdited;
     int currentSize;
 
