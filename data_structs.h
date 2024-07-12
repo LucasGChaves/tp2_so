@@ -3,8 +3,7 @@
 
 #ifndef DATA_STRUCT
 #define DATA_STRUCT
-#define READ 0
-#define WRITE 1
+
 typedef struct Page
 {
     int id;
