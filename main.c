@@ -1,5 +1,4 @@
 #include "linked_list.h"
-#include "stack.h"
 #include "data_structs.h"
 #include "table.h"
 #include "lru.h"
@@ -9,7 +8,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-char* concat(const char *s1, const char *s2) {
+char *concat(const char *s1, const char *s2)
+{
     char *result = malloc(strlen(s1) + strlen(s2) + 1);
     strcpy(result, s1);
     strcat(result, s2);
@@ -43,28 +43,32 @@ long int convertStrAddrToInt(char *addr)
     long int intAddr;
 
     intAddr = strtol(addr, NULL, 16);
-    //sscanf(addr, "%x", &intAddr);
+    // sscanf(addr, "%x", &intAddr);
     return intAddr;
 }
 
-int isReadOrWrite(char* line) {
-    char* addr = strtok(line, " ");
-    char* opType = strtok(NULL, " ");
+int isReadOrWrite(char *line)
+{
+    char *addr = strtok(line, " ");
+    char *opType = strtok(NULL, " ");
 
-    if(opType[0] == 'R') {
+    if (opType[0] == 'R')
+    {
         return READ;
     }
-    
+
     return WRITE;
 }
 
-char* getAddrFromLine(char* line) {
+char *getAddrFromLine(char *line)
+{
     char lineCopy[100];
     strcpy(lineCopy, line);
     return strtok(lineCopy, " ");
 }
 
-void printRelatory(Table *table, char* algorithm, unsigned int pageSize, unsigned int memorySize, char* fileName) {
+void printRelatory(Table *table, char *algorithm, unsigned int pageSize, unsigned int memorySize, char *fileName)
+{
     printf("Executando o arquivo %s...\n", fileName);
     printf("Tamanho da memoria: %d\n", memorySize);
     printf("Tamanho das paginas: %d\n", pageSize);
@@ -75,13 +79,16 @@ void printRelatory(Table *table, char* algorithm, unsigned int pageSize, unsigne
     printf("Substituicoes de pagina: %d\n", table->substitutionCount);
 }
 
-void processSubstitution(Table *table, Page *newPage, char* algorithm) {
-    if(strcmp(algorithm, "lru") == 0) {
+void processSubstitution(Table *table, Page *newPage, char *algorithm)
+{
+    if (strcmp(algorithm, "lru") == 0)
+    {
         substitutePageWithLru(table, newPage);
     }
 }
 
-void processFileLine(Table *table, char* line, unsigned int offset, char* algorithm) {
+void processFileLine(Table *table, char *line, unsigned int offset, char *algorithm)
+{
     char addr[256];
     strcpy(addr, getAddrFromLine(line));
     unsigned int opType = isReadOrWrite(line);
@@ -89,7 +96,7 @@ void processFileLine(Table *table, char* line, unsigned int offset, char* algori
     unsigned int pageId = getAddrPage(addrInt, offset);
 
     time_t seconds = time(NULL);
-    Page* page = (Page*) malloc(sizeof(Page));
+    Page *page = (Page *)malloc(sizeof(Page));
     page->addrs = createLinkedList();
 
     page->currentSize = 1;
@@ -109,30 +116,37 @@ void processFileLine(Table *table, char* line, unsigned int offset, char* algori
 
     int opResult = -1;
 
-    if(opType == READ) {
+    if (opType == READ)
+    {
         opResult = readFromTable(table, addrInt, page);
     }
-    else {
+    else
+    {
         opResult = writeIntoTable(table, addrInt, page);
     }
 
-    if(opResult == 0) {
-        //call substitution algorithm
+    if (opResult == PAGE_FAUT_AND_SUBSTITUTION)
+    {
+        // call substitution algorithm
         substitutePageWithLru(table, page);
         table->substitutionCount++;
         return;
     }
-    if(opResult == 1) {
+    if (opResult == PAGE_FAULT)
+    {
         table->pageFaultCount++;
-        if(opType == READ) {
+        if (opType == READ)
+        {
             table->readCount++;
         }
-        else {
+        else
+        {
             table->writeCount++;
         }
         return;
     }
-    if(opResult == 2 && opType == READ) {
+    if (opResult == 2 && opType == READ)
+    {
         table->readCount++;
         return;
     }
@@ -140,22 +154,26 @@ void processFileLine(Table *table, char* line, unsigned int offset, char* algori
     return;
 }
 
-void processFile(Table *table, char* fileName, unsigned int offset, char* algorithm) {
-    char* filePath = concat("files/", fileName);
-    
-    FILE* file = fopen(filePath, "r");
+void processFile(Table *table, char *fileName, unsigned int offset, char *algorithm)
+{
+    char *filePath = concat("files/", fileName);
+
+    FILE *file = fopen(filePath, "r");
 
     char line[256];
 
-    if(file != NULL) {
-        while(fgets(line, sizeof(line), file)) {
+    if (file != NULL)
+    {
+        while (fgets(line, sizeof(line), file))
+        {
             processFileLine(table, line, offset, algorithm);
         }
         fclose(file);
     }
 }
 
-void printFullTable(Table *table) {
+void printFullTable(Table *table)
+{
     printf("-----TABLE-----\n");
     printf("size: %d\n", table->size);
     printf("maxSlotsQuantity: %d\n", table->maxSlotsQuantity);
@@ -167,7 +185,8 @@ void printFullTable(Table *table) {
     printf("substitutionCount: %d\n", table->substitutionCount);
     printf("---------------\n");
     printf("-----PAGES-----\n");
-    for(int i=0; i < table->occupiedSlotsQuantity; i++) {
+    for (int i = 0; i < table->occupiedSlotsQuantity; i++)
+    {
         printf("Page %d -> ", table->pages[i].id);
         printList(table->pages[i].addrs);
     }
@@ -182,8 +201,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    char* algorithm = argv[1];
-    char* fileName = argv[2];
+    char *algorithm = argv[1];
+    char *fileName = argv[2];
     unsigned int pageSizeInKB = atoi(argv[3]);
     unsigned int pageSizeInByte = convertToByte(pageSizeInKB);
     unsigned int tableSizeInKB = atoi(argv[4]);

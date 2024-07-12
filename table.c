@@ -1,9 +1,10 @@
 #include "table.h"
 
-void initializeTable(Table *table, unsigned int tablePageSizeInBytes, unsigned int pageSizeInBytes) {
-    table->maxSlotsQuantity = tablePageSizeInBytes/pageSizeInBytes;
-    
-    table->pages = (Page*) malloc(sizeof(Page) * table->maxSlotsQuantity);
+void initializeTable(Table *table, unsigned int tablePageSizeInBytes, unsigned int pageSizeInBytes)
+{
+    table->maxSlotsQuantity = tablePageSizeInBytes / pageSizeInBytes;
+
+    table->pages = (Page *)malloc(sizeof(Page) * table->maxSlotsQuantity);
     table->size = tablePageSizeInBytes;
     table->occupiedSlotsQuantity = 0;
     table->maxAddrsQuantityInPage = (pageSizeInBytes * 8) / 32;
@@ -14,7 +15,8 @@ void initializeTable(Table *table, unsigned int tablePageSizeInBytes, unsigned i
 
     int i = 0;
 
-    for (i = 0; i < table->maxSlotsQuantity; i++) {
+    for (i = 0; i < table->maxSlotsQuantity; i++)
+    {
         table->pages[i].currentSize = 0;
         table->pages[i].wasEdited = 0;
         table->pages[i].lastAccessTime = 0;
@@ -23,13 +25,16 @@ void initializeTable(Table *table, unsigned int tablePageSizeInBytes, unsigned i
     }
 }
 
-int writeIntoTable(Table *table, unsigned int addr, Page *page/*unsigned int pageId*/) {
+int writeIntoTable(Table *table, unsigned int addr, Page *page /*unsigned int pageId*/)
+{
     int pageIndex = pageIndexOnTable(table, page->id);
     time_t now = time(NULL);
 
     printf("\n\n\n***************** %d %d %d *****************\n\n\n", pageIndex, table->occupiedSlotsQuantity, table->maxSlotsQuantity);
-    if (pageIndex == -1) {
-        if(table->occupiedSlotsQuantity == table->maxSlotsQuantity) {
+    if (pageIndex == -1)
+    {
+        if (table->occupiedSlotsQuantity == table->maxSlotsQuantity)
+        {
             return PAGE_FAUT_AND_SUBSTITUTION;
         }
 
@@ -38,17 +43,21 @@ int writeIntoTable(Table *table, unsigned int addr, Page *page/*unsigned int pag
         return PAGE_FAULT;
     }
 
-    //Página cheia -> não escreve
-    if (table->pages[pageIndex].currentSize == table->maxAddrsQuantityInPage) {
+    // Página cheia -> não escreve
+    if (table->pages[pageIndex].currentSize == table->maxAddrsQuantityInPage)
+    {
         table->pages[pageIndex].lastAccessTime = now;
         return OPERATION_CONCLUDED;
     }
 
-    if (findValue(table->pages[pageIndex].addrs, addr) == -1) {
-        if (table->pages[pageIndex].currentSize == 0) {
+    if (findValue(table->pages[pageIndex].addrs, addr) == -1)
+    {
+        if (table->pages[pageIndex].currentSize == 0)
+        {
             insertAtBeginning(table->pages[pageIndex].addrs, addr);
         }
-        else {
+        else
+        {
             insertAtEnd(table->pages[pageIndex].addrs, addr);
         }
         table->pages[pageIndex].currentSize++;
@@ -57,13 +66,15 @@ int writeIntoTable(Table *table, unsigned int addr, Page *page/*unsigned int pag
     return OPERATION_CONCLUDED;
 }
 
-int readFromTable(Table *table, unsigned int addr, Page *page/*unsigned int pageId*/)
+int readFromTable(Table *table, unsigned int addr, Page *page /*unsigned int pageId*/)
 {
     int pageIndex = pageIndexOnTable(table, page->id);
     time_t now = time(NULL);
 
-    if (pageIndex == -1) {
-        if(table->occupiedSlotsQuantity == table->maxSlotsQuantity) {
+    if (pageIndex == -1)
+    {
+        if (table->occupiedSlotsQuantity == table->maxSlotsQuantity)
+        {
             return PAGE_FAUT_AND_SUBSTITUTION;
         }
         insertPageInTable(table, page, -1);
@@ -75,10 +86,13 @@ int readFromTable(Table *table, unsigned int addr, Page *page/*unsigned int page
     return OPERATION_CONCLUDED;
 }
 
-int pageIndexOnTable(Table *table, unsigned int pageId) {
+int pageIndexOnTable(Table *table, unsigned int pageId)
+{
     int index = -1;
-    for (int i = 0; i < table->maxSlotsQuantity; i++) {
-        if (table->pages[i].id == pageId) {
+    for (int i = 0; i < table->maxSlotsQuantity; i++)
+    {
+        if (table->pages[i].id == pageId)
+        {
             index = i;
             break;
         }
@@ -86,10 +100,13 @@ int pageIndexOnTable(Table *table, unsigned int pageId) {
     return index;
 }
 
-void insertPageInTable(Table *table, Page *page, unsigned int pos) {
-    if(pos == -1) {
+void insertPageInTable(Table *table, Page *page, unsigned int pos)
+{
+    if (pos == -1)
+    {
         time_t now = time(NULL);
-        if(table->occupiedSlotsQuantity < table->maxSlotsQuantity) {
+        if (table->occupiedSlotsQuantity < table->maxSlotsQuantity)
+        {
             table->pages[table->occupiedSlotsQuantity] = *page;
             table->pages[table->occupiedSlotsQuantity].lastAccessTime = now;
             table->occupiedSlotsQuantity++;
@@ -98,4 +115,19 @@ void insertPageInTable(Table *table, Page *page, unsigned int pos) {
     }
     table->pages[pos] = *page;
     return;
+}
+
+int findPageIndex(Table *table, Page *page)
+{
+    int index = -1;
+
+    for (int i = 0; i < table->occupiedSlotsQuantity; i++)
+    {
+        if (table->pages[i].id == page->id)
+        {
+            index = i;
+        }
+    }
+
+    return index;
 }

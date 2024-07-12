@@ -10,7 +10,7 @@
 
 typedef struct Table
 {
-    Page* pages;
+    Page *pages;
     int size;
     int maxSlotsQuantity;
     int occupiedSlotsQuantity;
@@ -22,9 +22,11 @@ typedef struct Table
 } Table;
 
 void initializeTable(Table *table, unsigned int tablePageSize, unsigned int pageSizeInBytes);
-int writeIntoTable(Table *table, unsigned int addr, Page *page/*unsigned int pageId*/);
-int readFromTable(Table *table, unsigned int addr, Page *page/*unsigned int pageId*/);
+int writeIntoTable(Table *table, unsigned int addr, Page *page /*unsigned int pageId*/);
+int readFromTable(Table *table, unsigned int addr, Page *page /*unsigned int pageId*/);
 int pageIndexOnTable(Table *table, unsigned int pageId);
 void insertPageInTable(Table *table, Page *page, unsigned int pos);
+
+int findPageIndex(Table *table, Page *page);
 
 #endif
