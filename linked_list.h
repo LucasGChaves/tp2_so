@@ -3,7 +3,7 @@
 
 typedef struct ListNode
 {
-    int data;
+    long int data;
     struct ListNode *next;
 } ListNode;
 
@@ -15,12 +15,12 @@ typedef struct
 
 LinkedList *createLinkedList();
 int isListEmpty(LinkedList *list);
-void insertAtBeginning(LinkedList *list, int data);
-void insertAtEnd(LinkedList *list, int data);
+void insertAtBeginning(LinkedList *list, long int data);
+void insertAtEnd(LinkedList *list, long int data);
 void printList(LinkedList *list);
 int removeFromBeginning(LinkedList *list);
 int removeFromEnd(LinkedList *list);
-int findValue(LinkedList *list, int value);
+int findValue(LinkedList *list, long int value);
 void freeLinkedList(LinkedList *list);
 
 #endif

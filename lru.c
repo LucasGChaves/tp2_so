@@ -14,7 +14,7 @@ int findOldestPageIndex(Table *table) {
     return index;
 }
 
-void substitutePageWithLru(Table *table, Page *newPage) {
+void substitutePageWithLru(Table *table, Page newPage, long int addr) {
     int oldestPageIndex = findOldestPageIndex(table);
-    insertPageInTable(table, newPage, oldestPageIndex);
+    insertPageInTable(table, newPage, addr, oldestPageIndex);
 }

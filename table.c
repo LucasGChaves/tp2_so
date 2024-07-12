@@ -1,6 +1,6 @@
 #include "table.h"
 
-void initializeTable(Table *table, unsigned int tablePageSizeInBytes, unsigned int pageSizeInBytes) {
+void initializeTable(Table *table, long int tablePageSizeInBytes, long int pageSizeInBytes) {
     table->maxSlotsQuantity = tablePageSizeInBytes/pageSizeInBytes;
     
     table->pages = (Page*) malloc(sizeof(Page) * table->maxSlotsQuantity);
@@ -19,21 +19,22 @@ void initializeTable(Table *table, unsigned int tablePageSizeInBytes, unsigned i
         table->pages[i].wasEdited = 0;
         table->pages[i].lastAccessTime = 0;
         table->pages[i].id = -1;
-        table->pages[i].addrs = createLinkedList();
+        table->pages[i].addrs;
     }
 }
 
-int writeIntoTable(Table *table, unsigned int addr, Page *page/*unsigned int pageId*/) {
-    int pageIndex = pageIndexOnTable(table, page->id);
+int writeIntoTable(Table *table, long int addr, Page page/*unsigned int pageId*/) {
+    int pageIndex = pageIndexOnTable(table, page.id);
     time_t now = time(NULL);
 
-    printf("\n\n\n***************** %d %d %d *****************\n\n\n", pageIndex, table->occupiedSlotsQuantity, table->maxSlotsQuantity);
+    //printf("\n\n\n***************** %d %d %d *****************\n\n\n", pageIndex, table->occupiedSlotsQuantity, table->maxSlotsQuantity);
     if (pageIndex == -1) {
         if(table->occupiedSlotsQuantity == table->maxSlotsQuantity) {
             return PAGE_FAUT_AND_SUBSTITUTION;
         }
 
-        insertPageInTable(table, page, -1);
+        
+        insertPageInTable(table, page, addr, -1);
         table->pages[pageIndex].lastAccessTime = now;
         return PAGE_FAULT;
     }
@@ -57,16 +58,16 @@ int writeIntoTable(Table *table, unsigned int addr, Page *page/*unsigned int pag
     return OPERATION_CONCLUDED;
 }
 
-int readFromTable(Table *table, unsigned int addr, Page *page/*unsigned int pageId*/)
+int readFromTable(Table *table, long int addr, Page page/*unsigned int pageId*/)
 {
-    int pageIndex = pageIndexOnTable(table, page->id);
+    int pageIndex = pageIndexOnTable(table, page.id);
     time_t now = time(NULL);
 
     if (pageIndex == -1) {
         if(table->occupiedSlotsQuantity == table->maxSlotsQuantity) {
             return PAGE_FAUT_AND_SUBSTITUTION;
         }
-        insertPageInTable(table, page, -1);
+        insertPageInTable(table, page, addr, -1);
         table->pages[pageIndex].lastAccessTime = now;
         return PAGE_FAULT;
     }
@@ -86,16 +87,23 @@ int pageIndexOnTable(Table *table, unsigned int pageId) {
     return index;
 }
 
-void insertPageInTable(Table *table, Page *page, unsigned int pos) {
+void insertPageInTable(Table *table, Page page, long int addr, unsigned int pos) {
+    time_t now = time(NULL);
+
     if(pos == -1) {
-        time_t now = time(NULL);
         if(table->occupiedSlotsQuantity < table->maxSlotsQuantity) {
-            table->pages[table->occupiedSlotsQuantity] = *page;
+            table->pages[table->occupiedSlotsQuantity] = page;
             table->pages[table->occupiedSlotsQuantity].lastAccessTime = now;
+            table->pages[table->occupiedSlotsQuantity].addrs = createLinkedList();
+            insertAtBeginning(table->pages[table->occupiedSlotsQuantity].addrs, addr);
             table->occupiedSlotsQuantity++;
             return;
         }
     }
-    table->pages[pos] = *page;
+
+    table->pages[pos] = page;
+    table->pages[pos].lastAccessTime = now;
+    table->pages[pos].addrs = createLinkedList();
+    insertAtBeginning(table->pages[pos].addrs, addr);
     return;
 }

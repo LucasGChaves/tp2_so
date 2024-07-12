@@ -21,10 +21,10 @@ typedef struct Table
     int substitutionCount;
 } Table;
 
-void initializeTable(Table *table, unsigned int tablePageSize, unsigned int pageSizeInBytes);
-int writeIntoTable(Table *table, unsigned int addr, Page *page/*unsigned int pageId*/);
-int readFromTable(Table *table, unsigned int addr, Page *page/*unsigned int pageId*/);
+void initializeTable(Table *table, long int tablePageSize, long int pageSizeInBytes);
+int writeIntoTable(Table *table, long int addr, Page page/*unsigned int pageId*/);
+int readFromTable(Table *table, long int addr, Page page/*unsigned int pageId*/);
 int pageIndexOnTable(Table *table, unsigned int pageId);
-void insertPageInTable(Table *table, Page *page, unsigned int pos);
+void insertPageInTable(Table *table, Page page, long int addr, unsigned int pos);
 
 #endif

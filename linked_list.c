@@ -20,7 +20,7 @@ int isListEmpty(LinkedList *list)
     return list->head == NULL;
 }
 
-void insertAtBeginning(LinkedList *list, int data)
+void insertAtBeginning(LinkedList *list, long int data)
 {
     ListNode *newNode = (ListNode *)malloc(sizeof(ListNode));
     if (newNode == NULL)
@@ -34,7 +34,7 @@ void insertAtBeginning(LinkedList *list, int data)
     list->size++;
 }
 
-void insertAtEnd(LinkedList *list, int data)
+void insertAtEnd(LinkedList *list, long int data)
 {
     ListNode *newNode = (ListNode *)malloc(sizeof(ListNode));
     if (newNode == NULL)
@@ -81,7 +81,7 @@ int removeFromBeginning(LinkedList *list)
         return -1; // Sentinel value to indicate error
     }
     ListNode *temp = list->head;
-    int data = temp->data;
+    long int data = temp->data;
     list->head = temp->next;
     free(temp);
     list->size--;
@@ -99,7 +99,7 @@ int removeFromEnd(LinkedList *list)
     if (list->head->next == NULL)
     {
         // Only one node in the list
-        int data = list->head->data;
+        long int data = list->head->data;
         free(list->head);
         list->head = NULL;
         list->size--;
@@ -114,14 +114,14 @@ int removeFromEnd(LinkedList *list)
         current = current->next;
     }
 
-    int data = current->data;
+    long int data = current->data;
     free(current);
     previous->next = NULL;
     list->size--;
     return data;
 }
 
-int findValue(LinkedList *list, int value)
+int findValue(LinkedList *list, long int value)
 {
     ListNode *current = list->head;
     int index = 0;
