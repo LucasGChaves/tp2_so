@@ -1,0 +1,10 @@
+#ifndef MACROSHEADER_H
+#define MACROSHEADER_H
+
+#define READ 0
+#define WRITE 1
+#define PAGE_FAUT_AND_SUBSTITUTION 0
+#define PAGE_FAULT 1
+#define OPERATION_CONCLUDED 2
+
+#endif
