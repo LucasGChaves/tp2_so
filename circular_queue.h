@@ -12,13 +12,13 @@ typedef struct
     CircularQueueNode *front;
     CircularQueueNode *rear;
     int size;
-} Queue;
+} CircularQueue;
 
-Queue *createQueue();
-int isQueueEmpty(Queue *q);
-void enqueue(Queue *q, int data);
-int dequeue(Queue *q);
-int queue_peek(Queue *q);
-void freeQueue(Queue *q);
+CircularQueue *createCircularQueue();
+int isCircularQueueEmpty(CircularQueue *q);
+void enqueueCircularQueue(CircularQueue *q, int data);
+int dequeueCircularQueue(CircularQueue *q);
+int circularQueuePeek(CircularQueue *q);
+void freeCircularQueue(CircularQueue *q);
 
 #endif

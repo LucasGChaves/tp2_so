@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include "circular_queue.h"
 
-Queue *createQueue()
+CircularQueue *createCircularQueue()
 {
-    Queue *q = (Queue *)malloc(sizeof(Queue));
+    CircularQueue *q = (CircularQueue *)malloc(sizeof(CircularQueue));
     if (q == NULL)
     {
         printf("Error allocating memory for the queue!\n");
@@ -15,12 +15,12 @@ Queue *createQueue()
     return q;
 }
 
-int isQueueEmpty(Queue *q)
+int isCircularQueueEmpty(CircularQueue *q)
 {
     return q->front == NULL;
 }
 
-void enqueue(Queue *q, int data)
+void enqueueCircularQueue(CircularQueue *q, int data)
 {
     CircularQueueNode *newCircularQueueNode = (CircularQueueNode *)malloc(sizeof(CircularQueueNode));
     if (newCircularQueueNode == NULL)
@@ -44,7 +44,7 @@ void enqueue(Queue *q, int data)
     q->size++;
 }
 
-int dequeue(Queue *q)
+int dequeueCircularQueue(CircularQueue *q)
 {
     if (isQueueEmpty(q))
     {
@@ -70,7 +70,7 @@ int dequeue(Queue *q)
     return data;
 }
 
-int queue_peek(Queue *q)
+int circularQueuePeek(CircularQueue *q)
 {
     if (isQueueEmpty(q))
     {
@@ -80,7 +80,7 @@ int queue_peek(Queue *q)
     return q->front->data;
 }
 
-void freeQueue(Queue *q)
+void freeCircularQueue(CircularQueue *q)
 {
     CircularQueueNode *temp;
     while (q->front != NULL)
