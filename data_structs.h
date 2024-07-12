@@ -8,7 +8,7 @@ typedef struct Page
 {
     int id;
     LinkedList *addrs;
-    time_t lastAccessTime; // user difftime(time1, time0) para comparar. Se positivo, time1 é mais tarde que time2
+    time_t lastAccessTime;
     int wasEdited;
     int currentSize;
 

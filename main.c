@@ -1,5 +1,4 @@
 #include "linked_list.h"
-#include "stack.h"
 #include "data_structs.h"
 #include "table.h"
 #include "lru.h"
@@ -9,7 +8,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-char* concat(const char *s1, const char *s2) {
+char *concat(const char *s1, const char *s2)
+{
     char *result = malloc(strlen(s1) + strlen(s2) + 1);
     strcpy(result, s1);
     strcat(result, s2);
@@ -43,22 +43,25 @@ long int convertStrAddrToInt(char *addr)
     long int intAddr;
 
     intAddr = strtol(addr, NULL, 16);
-    //sscanf(addr, "%x", &intAddr);
+    // sscanf(addr, "%x", &intAddr);
     return intAddr;
 }
 
-int isReadOrWrite(char* line) {
-    char* addr = strtok(line, " ");
-    char* opType = strtok(NULL, " ");
+int isReadOrWrite(char *line)
+{
+    char *addr = strtok(line, " ");
+    char *opType = strtok(NULL, " ");
 
-    if(opType[0] == 'R') {
+    if (opType[0] == 'R')
+    {
         return READ;
     }
-    
+
     return WRITE;
 }
 
-char* getAddrFromLine(char* line) {
+char *getAddrFromLine(char *line)
+{
     char lineCopy[100];
     strcpy(lineCopy, line);
     return strtok(lineCopy, " ");
@@ -110,10 +113,12 @@ void processFileLine(Table *table, char* line, long int offset, char* algorithm)
 
     int opResult = -1;
 
-    if(opType == READ) {
+    if (opType == READ)
+    {
         opResult = readFromTable(table, addrInt, page);
     }
-    else {
+    else
+    {
         opResult = writeIntoTable(table, addrInt, page);
     }
 
@@ -136,17 +141,21 @@ void processFileLine(Table *table, char* line, long int offset, char* algorithm)
         }
         return;
     }
-    if(opResult == 1) {
+    if (opResult == PAGE_FAULT)
+    {
         table->pageFaultCount++;
-        if(opType == READ) {
+        if (opType == READ)
+        {
             table->readCount++;
         }
-        else {
+        else
+        {
             table->writeCount++;
         }
         return;
     }
-    if(opResult == 2 && opType == READ) {
+    if (opResult == 2 && opType == READ)
+    {
         table->readCount++;
         return;
     }
@@ -161,15 +170,18 @@ void processFile(Table *table, char* fileName, long int offset, char* algorithm)
 
     char line[256];
 
-    if(file != NULL) {
-        while(fgets(line, sizeof(line), file)) {
+    if (file != NULL)
+    {
+        while (fgets(line, sizeof(line), file))
+        {
             processFileLine(table, line, offset, algorithm);
         }
         fclose(file);
     }
 }
 
-void printFullTable(Table *table) {
+void printFullTable(Table *table)
+{
     printf("-----TABLE-----\n");
     printf("size: %d\n", table->size);
     printf("maxSlotsQuantity: %d\n", table->maxSlotsQuantity);
@@ -197,8 +209,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    char* algorithm = argv[1];
-    char* fileName = argv[2];
+    char *algorithm = argv[1];
+    char *fileName = argv[2];
     unsigned int pageSizeInKB = atoi(argv[3]);
     long int pageSizeInByte = convertToByte(pageSizeInKB);
     unsigned int tableSizeInKB = atoi(argv[4]);

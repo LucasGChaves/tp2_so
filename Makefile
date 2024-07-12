@@ -8,8 +8,7 @@ CC = gcc
 CFLAGS = -Wall -g
 
 # Arquivos fonte
-SOURCES = main.c linked_list.c stack.c circular_queue.c
-
+SOURCES = main.c linked_list.c second_chance.c queue.c 
 # Arquivos objeto (gerados a partir dos arquivos fonte)
 OBJECTS = $(SOURCES:.c=.o)
 
