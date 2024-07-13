@@ -8,7 +8,7 @@ CC = gcc
 CFLAGS = -Wall -g
 
 # Arquivos fonte
-SOURCES = main.c linked_list.c second_chance.c queue.c 
+SOURCES = main.c linked_list.c second_chance.c fifo.c ramdom.c
 # Arquivos objeto (gerados a partir dos arquivos fonte)
 OBJECTS = $(SOURCES:.c=.o)
 

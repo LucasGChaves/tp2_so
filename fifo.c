@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "queue.h"
+#include "fifo.h"
 
 Queue *createQueue()
 {
@@ -19,7 +19,7 @@ int isEmpty(Queue *q)
     return q->front == NULL;
 }
 
-void enqueue(Queue *q, int data)
+void enqueue(Queue *q, Page page)
 {
     Node *newNode = (Node *)malloc(sizeof(Node));
     if (newNode == NULL)
@@ -27,7 +27,7 @@ void enqueue(Queue *q, int data)
         printf("Error allocating memory for the new node!\n");
         exit(1);
     }
-    newNode->data = data;
+    newNode->page = page;
     newNode->next = NULL;
 
     if (isEmpty(q))
@@ -41,15 +41,17 @@ void enqueue(Queue *q, int data)
     }
 }
 
-int dequeue(Queue *q)
+Page dequeue(Queue *q)
 {
+    Page emptyPage;
+    emptyPage.id = -1;
     if (isEmpty(q))
     {
         printf("Error: Queue is empty!\n");
-        return -1; // Sentinel value to indicate error
+        return emptyPage; // Sentinel value to indicate error
     }
     Node *temp = q->front;
-    int data = temp->data;
+    Page page = temp->page;
     q->front = q->front->next;
 
     if (q->front == NULL)
@@ -58,17 +60,7 @@ int dequeue(Queue *q)
     }
 
     free(temp);
-    return data;
-}
-
-int peek(Queue *q)
-{
-    if (isEmpty(q))
-    {
-        printf("Error: Queue is empty!\n");
-        return -1; // Sentinel value to indicate error
-    }
-    return q->front->data;
+    return page;
 }
 
 void freeQueue(Queue *q)

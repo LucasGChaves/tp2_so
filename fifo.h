@@ -1,9 +1,9 @@
-#ifndef QUEUE_H
-#define QUEUE_H
-
+#ifndef FIFO
+#define FIFO
+#include "data_structs.h"
 typedef struct Node
 {
-    int data;
+    Page page;
     struct Node *next;
 } Node;
 
@@ -15,9 +15,8 @@ typedef struct
 
 Queue *createQueue();
 int isEmpty(Queue *q);
-void enqueue(Queue *q, int data);
-int dequeue(Queue *q);
-int peek(Queue *q);
+void enqueue(Queue *q, Page page);
+Page dequeue(Queue *q);
 void freeQueue(Queue *q);
 
 #endif
