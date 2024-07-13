@@ -11,6 +11,7 @@ void initializeTable(Table *table, long int tablePageSizeInBytes, long int pageS
     table->writeCount = 0;
     table->pageFaultCount = 0;
     table->substitutionCount = 0;
+    table->totalAccesses = 0;
 
     int i = 0;
 
@@ -18,32 +19,33 @@ void initializeTable(Table *table, long int tablePageSizeInBytes, long int pageS
     {
         table->pages[i].currentSize = 0;
         table->pages[i].wasEdited = 0;
-        table->pages[i].lastAccessTime = 0;
         table->pages[i].id = -1;
-        table->pages[i].addrs;
+        table->pages[i].addrs = createLinkedList();
+        table->pages[i].lastAccess = 0;
     }
 }
 
 int writeIntoTable(Table *table, long int addr, Page page/*unsigned int pageId*/) {
-    int pageIndex = pageIndexOnTable(table, page.id);
+    long int pageIndex = pageIndexOnTable(table, page.id);
     time_t now = time(NULL);
 
     //printf("\n\n\n***************** %d %d %d *****************\n\n\n", pageIndex, table->occupiedSlotsQuantity, table->maxSlotsQuantity);
     if (pageIndex == -1) {
         if(table->occupiedSlotsQuantity == table->maxSlotsQuantity) {
+            //printf("\nPAGE_FAUT_AND_SUBSTITUTION\n");
             return PAGE_FAUT_AND_SUBSTITUTION;
         }
 
         
         insertPageInTable(table, page, addr, -1);
-        table->pages[pageIndex].lastAccessTime = now;
         return PAGE_FAULT;
     }
 
     // Página cheia -> não escreve
     if (table->pages[pageIndex].currentSize == table->maxAddrsQuantityInPage)
     {
-        table->pages[pageIndex].lastAccessTime = now;
+        table->totalAccesses++;
+        table->pages[pageIndex].lastAccess = table->totalAccesses;
         return OPERATION_CONCLUDED;
     }
 
@@ -58,16 +60,16 @@ int writeIntoTable(Table *table, long int addr, Page page/*unsigned int pageId*/
             insertAtEnd(table->pages[pageIndex].addrs, addr);
         }
         table->pages[pageIndex].currentSize++;
-        table->pages[pageIndex].lastAccessTime = now;
+        table->totalAccesses++;
+        table->pages[pageIndex].lastAccess = table->totalAccesses;
     }
     return OPERATION_CONCLUDED;
 }
 
 int readFromTable(Table *table, long int addr, Page page/*unsigned int pageId*/)
 {
-    int pageIndex = pageIndexOnTable(table, page.id);
-    time_t now = time(NULL);
-
+    long int pageIndex = pageIndexOnTable(table, page.id);
+    //printf("\nADDR: %ld\n", addr);
     if (pageIndex == -1)
     {
         if (table->occupiedSlotsQuantity == table->maxSlotsQuantity)
@@ -75,18 +77,18 @@ int readFromTable(Table *table, long int addr, Page page/*unsigned int pageId*/)
             return PAGE_FAUT_AND_SUBSTITUTION;
         }
         insertPageInTable(table, page, addr, -1);
-        table->pages[pageIndex].lastAccessTime = now;
         return PAGE_FAULT;
     }
 
-    table->pages[pageIndex].lastAccessTime = now;
+    table->totalAccesses++;
+    table->pages[pageIndex].lastAccess = table->totalAccesses;
     return OPERATION_CONCLUDED;
 }
 
-int pageIndexOnTable(Table *table, unsigned int pageId)
+long int pageIndexOnTable(Table *table, long int pageId)
 {
-    int index = -1;
-    for (int i = 0; i < table->maxSlotsQuantity; i++)
+    long int index = -1;
+    for (long int i = 0; i < table->maxSlotsQuantity; i++)
     {
         if (table->pages[i].id == pageId)
         {
@@ -97,13 +99,14 @@ int pageIndexOnTable(Table *table, unsigned int pageId)
     return index;
 }
 
-void insertPageInTable(Table *table, Page page, long int addr, unsigned int pos) {
-    time_t now = time(NULL);
+void insertPageInTable(Table *table, Page page, long int addr, long int pos) {
+    table->totalAccesses++;
 
     if(pos == -1) {
         if(table->occupiedSlotsQuantity < table->maxSlotsQuantity) {
+            freeLinkedList(table->pages[table->occupiedSlotsQuantity].addrs);
             table->pages[table->occupiedSlotsQuantity] = page;
-            table->pages[table->occupiedSlotsQuantity].lastAccessTime = now;
+            table->pages[table->occupiedSlotsQuantity].lastAccess = table->totalAccesses;
             table->pages[table->occupiedSlotsQuantity].addrs = createLinkedList();
             insertAtBeginning(table->pages[table->occupiedSlotsQuantity].addrs, addr);
             table->occupiedSlotsQuantity++;
@@ -111,18 +114,19 @@ void insertPageInTable(Table *table, Page page, long int addr, unsigned int pos)
         }
     }
 
+    freeLinkedList(table->pages[pos].addrs);
     table->pages[pos] = page;
-    table->pages[pos].lastAccessTime = now;
+    table->pages[pos].lastAccess = table->totalAccesses;
     table->pages[pos].addrs = createLinkedList();
     insertAtBeginning(table->pages[pos].addrs, addr);
     return;
 }
 
-int findPageIndex(Table *table, Page *page)
+long int findPageIndex(Table *table, Page *page)
 {
-    int index = -1;
+    long int index = -1;
 
-    for (int i = 0; i < table->occupiedSlotsQuantity; i++)
+    for (long int i = 0; i < table->occupiedSlotsQuantity; i++)
     {
         if (table->pages[i].id == page->id)
         {
@@ -131,4 +135,13 @@ int findPageIndex(Table *table, Page *page)
     }
 
     return index;
+}
+
+void freeTablePages(Table *table) {
+    for(long int i=0; i<table->maxSlotsQuantity; i++) {
+        if(table->pages[i].id > -1) {
+            freeLinkedList(table->pages[i].addrs);
+        }
+    }
+    free(table->pages);
 }

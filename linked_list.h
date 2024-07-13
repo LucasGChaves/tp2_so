@@ -10,7 +10,7 @@ typedef struct ListNode
 typedef struct
 {
     ListNode *head;
-    int size;
+    long int size;
 } LinkedList;
 
 LinkedList *createLinkedList();
@@ -18,9 +18,9 @@ int isListEmpty(LinkedList *list);
 void insertAtBeginning(LinkedList *list, long int data);
 void insertAtEnd(LinkedList *list, long int data);
 void printList(LinkedList *list);
-int removeFromBeginning(LinkedList *list);
-int removeFromEnd(LinkedList *list);
-int findValue(LinkedList *list, long int value);
+long int removeFromBeginning(LinkedList *list);
+long int removeFromEnd(LinkedList *list);
+long int findValue(LinkedList *list, long int value);
 void freeLinkedList(LinkedList *list);
 
 #endif

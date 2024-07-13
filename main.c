@@ -60,22 +60,23 @@ int isReadOrWrite(char *line)
     return WRITE;
 }
 
-char *getAddrFromLine(char *line)
+void getAddrFromLine(char *line, char* addr)
 {
-    char lineCopy[100];
-    strcpy(lineCopy, line);
-    return strtok(lineCopy, " ");
+    //char lineCopy[100];
+    //strcpy(lineCopy, line);
+    //return strtok(lineCopy, " ");
+    sscanf(line, "%s", addr);
 }
 
 void printRelatory(Table *table, char* algorithm, long int pageSize, long int memorySize, char* fileName) {
     printf("Executando o arquivo %s...\n", fileName);
-    printf("Tamanho da memoria: %d\n", memorySize);
-    printf("Tamanho das paginas: %d\n", pageSize);
+    printf("Tamanho da memoria: %ld\n", memorySize);
+    printf("Tamanho das paginas: %ld\n", pageSize);
     printf("Tecnica de reposicaoo: %s\n", algorithm);
-    printf("Paginas lidas: %d\n", table->readCount);
-    printf("Pagnas escritas: %d\n", table->writeCount);
-    printf("Page faults: %d\n", table->pageFaultCount);
-    printf("Substituicoes de pagina: %d\n", table->substitutionCount);
+    printf("Paginas lidas: %ld\n", table->readCount);
+    printf("Pagnas escritas: %ld\n", table->writeCount);
+    printf("Page faults: %ld\n", table->pageFaultCount);
+    printf("Substituicoes de pagina: %ld\n", table->substitutionCount);
 }
 
 void processSubstitution(Table *table, Page newPage, long int addr, char* algorithm) {
@@ -86,19 +87,17 @@ void processSubstitution(Table *table, Page newPage, long int addr, char* algori
 
 void processFileLine(Table *table, char* line, long int offset, char* algorithm) {
     char addr[256];
-    strcpy(addr, getAddrFromLine(line));
-    long int opType = isReadOrWrite(line);
+    getAddrFromLine(line, addr);
+    int opType = isReadOrWrite(line);
     long int addrInt = convertStrAddrToInt(addr);
     long int pageId = getAddrPage(addrInt, offset);
 
-    time_t seconds = time(NULL);
     //Page* page = (Page*) malloc(sizeof(Page));
     Page page;
     //page->addrs = createLinkedList();
 
     page.currentSize = 1;
     page.wasEdited = 1;
-    page.lastAccessTime = seconds;
     page.id = pageId;
 
     //insertAtBeginning(page->addrs, addrInt);
@@ -178,23 +177,23 @@ void processFile(Table *table, char* fileName, long int offset, char* algorithm)
         }
         fclose(file);
     }
+    free(filePath);
 }
 
 void printFullTable(Table *table)
 {
     printf("-----TABLE-----\n");
-    printf("size: %d\n", table->size);
-    printf("maxSlotsQuantity: %d\n", table->maxSlotsQuantity);
-    printf("occupiedSlotsQuantity: %d\n", table->occupiedSlotsQuantity);
-    printf("maxAddrsQuantityInPage: %d\n", table->maxAddrsQuantityInPage);
-    printf("readCount: %d\n", table->readCount);
-    printf("writeCount: %d\n", table->writeCount);
-    printf("pageFaultCount: %d\n", table->pageFaultCount);
-    printf("substitutionCount: %d\n", table->substitutionCount);
+    printf("size: %ld\n", table->size);
+    printf("maxSlotsQuantity: %ld\n", table->maxSlotsQuantity);
+    printf("occupiedSlotsQuantity: %ld\n", table->occupiedSlotsQuantity);
+    printf("maxAddrsQuantityInPage: %ld\n", table->maxAddrsQuantityInPage);
+    printf("readCount: %ld\n", table->readCount);
+    printf("writeCount: %ld\n", table->writeCount);
+    printf("pageFaultCount: %ld\n", table->pageFaultCount);
+    printf("substitutionCount: %ld\n", table->substitutionCount);
     printf("---------------\n");
     printf("-----PAGES-----\n");
-    for(int i=0; i < table->occupiedSlotsQuantity; i++) {
-        freeLinkedList(table->pages[i].addrs);
+    for(long int i=0; i < table->occupiedSlotsQuantity; i++) {
         // printf("Page %d -> ", table->pages[i].id);
         // printList(table->pages[i].addrs);
     }
@@ -221,6 +220,7 @@ int main(int argc, char *argv[])
     initializeTable(&table, tableSizeInByte, pageSizeInByte);
     processFile(&table, fileName, offset, algorithm);
     printRelatory(&table, algorithm, pageSizeInKB, tableSizeInKB, fileName);
-    printFullTable(&table);
+    //printFullTable(&table);
+    freeTablePages(&table);
 
 }
