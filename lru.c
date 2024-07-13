@@ -1,12 +1,15 @@
 #include "lru.h"
+#include <limits.h>
 
-int findOldestPageIndex(Table *table) {
-    time_t oldestTimeAccess = time(NULL);
-    int index = -1;
+long int findOldestPageIndex(Table *table) {
+    long int oldestTimeAccess = LONG_MAX;
+    long int index = -1;
 
     for(int i=0; i<table->occupiedSlotsQuantity; i++) {
-        if(difftime(oldestTimeAccess, table->pages[i].lastAccessTime) <= 0) {
-            oldestTimeAccess = table->pages[i].lastAccessTime;
+        //printf("%d - %ld\n", table->pages[i].lastAccess, oldestTimeAccess);
+        if(table->pages[i].lastAccess < oldestTimeAccess) {
+            //printf("entered\n");
+            oldestTimeAccess = table->pages[i].lastAccess;
             index = i;
         }
     }
@@ -15,6 +18,6 @@ int findOldestPageIndex(Table *table) {
 }
 
 void substitutePageWithLru(Table *table, Page newPage, long int addr) {
-    int oldestPageIndex = findOldestPageIndex(table);
+    long int oldestPageIndex = findOldestPageIndex(table);
     insertPageInTable(table, newPage, addr, oldestPageIndex);
 }

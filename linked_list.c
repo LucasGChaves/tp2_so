@@ -73,7 +73,7 @@ void printList(LinkedList *list)
     printf("\n");
 }
 
-int removeFromBeginning(LinkedList *list)
+long int removeFromBeginning(LinkedList *list)
 {
     if (isListEmpty(list))
     {
@@ -88,7 +88,7 @@ int removeFromBeginning(LinkedList *list)
     return data;
 }
 
-int removeFromEnd(LinkedList *list)
+long int removeFromEnd(LinkedList *list)
 {
     if (isListEmpty(list))
     {
@@ -121,10 +121,10 @@ int removeFromEnd(LinkedList *list)
     return data;
 }
 
-int findValue(LinkedList *list, long int value)
+long int findValue(LinkedList *list, long int value)
 {
     ListNode *current = list->head;
-    int index = 0;
+    long int index = 0;
     while (current != NULL)
     {
         if (current->data == value)

@@ -6,11 +6,11 @@
 
 typedef struct Page
 {
-    int id;
+    long int id;
     LinkedList *addrs;
-    time_t lastAccessTime;
     int wasEdited;
-    int currentSize;
+    long int currentSize;
+    long int lastAccess;
 
 } Page;
 
