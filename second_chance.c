@@ -32,7 +32,7 @@ void enqueueSecondChanceQueue(SecondChanceQueue *q, Page page)
     newNode->referenceBit = 1; // Define o bit de referência como 1 ao enfileirar
     newNode->next = NULL;
 
-    if (isEmpty(q))
+    if (isSecondChanceQueueEmpty(q))
     {
         q->front = q->rear = newNode;
     }
@@ -49,7 +49,7 @@ Page dequeueSecondChanceQueue(SecondChanceQueue *q)
 {
     Page emptyPage;
     emptyPage.id = -1;
-    if (isEmpty(q))
+    if (isSecondChanceQueueEmpty(q))
     {
         printf("Erro: Fila vazia!\n");
         return emptyPage; // Valor sentinela para indicar erro

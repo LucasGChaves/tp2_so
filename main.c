@@ -2,6 +2,9 @@
 #include "data_structs.h"
 #include "table.h"
 #include "lru.h"
+#include "random.h"
+#include "second_chance.h"
+#include "fifo.h"
 #include "macros.h"
 #include <stdio.h>
 #include <string.h>
@@ -60,15 +63,16 @@ int isReadOrWrite(char *line)
     return WRITE;
 }
 
-void getAddrFromLine(char *line, char* addr)
+void getAddrFromLine(char *line, char *addr)
 {
-    //char lineCopy[100];
-    //strcpy(lineCopy, line);
-    //return strtok(lineCopy, " ");
+    // char lineCopy[100];
+    // strcpy(lineCopy, line);
+    // return strtok(lineCopy, " ");
     sscanf(line, "%s", addr);
 }
 
-void printRelatory(Table *table, char* algorithm, long int pageSize, long int memorySize, char* fileName) {
+void printRelatory(Table *table, char *algorithm, long int pageSize, long int memorySize, char *fileName)
+{
     printf("Executando o arquivo %s...\n", fileName);
     printf("Tamanho da memoria: %ld\n", memorySize);
     printf("Tamanho das paginas: %ld\n", pageSize);
@@ -79,28 +83,46 @@ void printRelatory(Table *table, char* algorithm, long int pageSize, long int me
     printf("Substituicoes de pagina: %ld\n", table->substitutionCount);
 }
 
-void processSubstitution(Table *table, Page newPage, long int addr, char* algorithm) {
-    if(strcmp(algorithm, "lru") == 0) {
+void processSubstitution(Table *table, Page newPage, long int addr, char *algorithm, Queue *fifoQueue, SecondChanceQueue *secondChanceQueue)
+{
+    if (strcmp(algorithm, "lru") == 0)
+    {
         substitutePageWithLru(table, newPage, addr);
+    }
+    else if (strcmp(algorithm, "2a") == 0)
+    {
+        Page page = dequeueSecondChanceQueue(secondChanceQueue);
+        findPageIndex(table, page);
+    }
+    else if (strcmp(algorithm, "fifo") == 0)
+    {
+        Page page = dequeue(fifoQueue);
+        findPageIndex(table, page);
+    }
+    else if (strcmp(algorithm, "random") == 0)
+    {
+        int pageIndex = getRandomNumber(table->maxSlotsQuantity - 1);
+        insertPageInTable(table, newPage, addr, pageIndex);
     }
 }
 
-void processFileLine(Table *table, char* line, long int offset, char* algorithm) {
+void processFileLine(Table *table, char *line, long int offset, char *algorithm, Queue *fifoQueue, SecondChanceQueue *secondChanceQueue)
+{
     char addr[256];
     getAddrFromLine(line, addr);
     int opType = isReadOrWrite(line);
     long int addrInt = convertStrAddrToInt(addr);
     long int pageId = getAddrPage(addrInt, offset);
 
-    //Page* page = (Page*) malloc(sizeof(Page));
+    // Page* page = (Page*) malloc(sizeof(Page));
     Page page;
-    //page->addrs = createLinkedList();
+    // page->addrs = createLinkedList();
 
     page.currentSize = 1;
     page.wasEdited = 1;
     page.id = pageId;
 
-    //insertAtBeginning(page->addrs, addrInt);
+    // insertAtBeginning(page->addrs, addrInt);
 
     // printf("------TESTING------\n");
     // printf("Line: %s\n", line);
@@ -114,27 +136,32 @@ void processFileLine(Table *table, char* line, long int offset, char* algorithm)
 
     if (opType == READ)
     {
-        opResult = readFromTable(table, addrInt, page);
+        opResult = readFromTable(table, addrInt, page, fifoQueue, secondChanceQueue);
     }
     else
     {
-        opResult = writeIntoTable(table, addrInt, page);
+        opResult = writeIntoTable(table, addrInt, page, fifoQueue, secondChanceQueue);
     }
 
-    if(opResult == 0) {
-        //call substitution algorithm
-        processSubstitution(table, page, addrInt, algorithm);
+    if (opResult == 0)
+    {
+        // call substitution algorithm
+        processSubstitution(table, page, addrInt, algorithm, fifoQueue, secondChanceQueue);
         table->substitutionCount++;
-        if(opType == READ) {
-            int result = readFromTable(table, addrInt, page);
-            if(result == 2) {
+        if (opType == READ)
+        {
+            int result = readFromTable(table, addrInt, page, fifoQueue, secondChanceQueue);
+            if (result == 2)
+            {
                 table->readCount++;
             }
         }
-        else {
-            int result = writeIntoTable(table, addrInt, page);
-            //printf("\nresult: %d\n", result);
-            if(result == 2) {
+        else
+        {
+            int result = writeIntoTable(table, addrInt, page, fifoQueue, secondChanceQueue);
+            // printf("\nresult: %d\n", result);
+            if (result == 2)
+            {
                 table->writeCount++;
             }
         }
@@ -162,10 +189,14 @@ void processFileLine(Table *table, char* line, long int offset, char* algorithm)
     return;
 }
 
-void processFile(Table *table, char* fileName, long int offset, char* algorithm) {
-    char* filePath = concat("files/", fileName);
-    
-    FILE* file = fopen(filePath, "r");
+void processFile(Table *table, char *fileName, long int offset, char *algorithm)
+{
+    char *filePath = concat("files/", fileName);
+
+    FILE *file = fopen(filePath, "r");
+
+    Queue *fifoQueue = createQueue();
+    SecondChanceQueue *secondChanceQueue = createSecondChanceQueue();
 
     char line[256];
 
@@ -173,7 +204,7 @@ void processFile(Table *table, char* fileName, long int offset, char* algorithm)
     {
         while (fgets(line, sizeof(line), file))
         {
-            processFileLine(table, line, offset, algorithm);
+            processFileLine(table, line, offset, algorithm, fifoQueue, secondChanceQueue);
         }
         fclose(file);
     }
@@ -193,7 +224,8 @@ void printFullTable(Table *table)
     printf("substitutionCount: %ld\n", table->substitutionCount);
     printf("---------------\n");
     printf("-----PAGES-----\n");
-    for(long int i=0; i < table->occupiedSlotsQuantity; i++) {
+    for (long int i = 0; i < table->occupiedSlotsQuantity; i++)
+    {
         // printf("Page %d -> ", table->pages[i].id);
         // printList(table->pages[i].addrs);
     }
@@ -220,7 +252,6 @@ int main(int argc, char *argv[])
     initializeTable(&table, tableSizeInByte, pageSizeInByte);
     processFile(&table, fileName, offset, algorithm);
     printRelatory(&table, algorithm, pageSizeInKB, tableSizeInKB, fileName);
-    //printFullTable(&table);
+    // printFullTable(&table);
     freeTablePages(&table);
-
 }

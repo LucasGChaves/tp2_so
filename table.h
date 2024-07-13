@@ -7,6 +7,8 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "second_chance.h"
+#include "fifo.h"
 
 typedef struct Table
 {
@@ -23,11 +25,11 @@ typedef struct Table
 } Table;
 
 void initializeTable(Table *table, long int tablePageSize, long int pageSizeInBytes);
-int writeIntoTable(Table *table, long int addr, Page page/*unsigned int pageId*/);
-int readFromTable(Table *table, long int addr, Page page/*unsigned int pageId*/);
+int writeIntoTable(Table *table, long int addr, Page page, Queue *fifoQueue, SecondChanceQueue *secondChanceQueue /*unsigned int pageId*/);
+int readFromTable(Table *table, long int addr, Page page, Queue *fifoQueue, SecondChanceQueue *secondChanceQueue /*unsigned int pageId*/);
 long int pageIndexOnTable(Table *table, long int pageId);
 void insertPageInTable(Table *table, Page page, long int addr, long int pos);
-long int findPageIndex(Table *table, Page *page);
+long int findPageIndex(Table *table, Page page);
 void freeTablePages(Table *table);
 
 #endif

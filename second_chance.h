@@ -1,7 +1,6 @@
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef SECOND_CHANCE_H
+#define SECOND_CHANCE_H
 #include "data_structs.h"
-#include "table.h"
 
 typedef struct SecondChanceQueueNode
 {

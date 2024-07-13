@@ -8,7 +8,7 @@ CC = gcc
 CFLAGS = -Wall -g
 
 # Arquivos fonte
-SOURCES = main.c linked_list.c second_chance.c fifo.c ramdom.c
+SOURCES = main.c linked_list.c second_chance.c fifo.c random.c lru.c table.c
 # Arquivos objeto (gerados a partir dos arquivos fonte)
 OBJECTS = $(SOURCES:.c=.o)
 
@@ -20,7 +20,7 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@
 
 # Regra para compilar os arquivos objeto 
-%.o: %.c data_structs.h
+%.o: %.c data_structs.h macros.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Regra para limpar os arquivos objeto e o executável

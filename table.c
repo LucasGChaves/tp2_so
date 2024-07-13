@@ -1,9 +1,10 @@
 #include "table.h"
 
-void initializeTable(Table *table, long int tablePageSizeInBytes, long int pageSizeInBytes) {
-    table->maxSlotsQuantity = tablePageSizeInBytes/pageSizeInBytes;
-    
-    table->pages = (Page*) malloc(sizeof(Page) * table->maxSlotsQuantity);
+void initializeTable(Table *table, long int tablePageSizeInBytes, long int pageSizeInBytes)
+{
+    table->maxSlotsQuantity = tablePageSizeInBytes / pageSizeInBytes;
+
+    table->pages = (Page *)malloc(sizeof(Page) * table->maxSlotsQuantity);
     table->size = tablePageSizeInBytes;
     table->occupiedSlotsQuantity = 0;
     table->maxAddrsQuantityInPage = (pageSizeInBytes * 8) / 32;
@@ -25,19 +26,23 @@ void initializeTable(Table *table, long int tablePageSizeInBytes, long int pageS
     }
 }
 
-int writeIntoTable(Table *table, long int addr, Page page/*unsigned int pageId*/) {
+int writeIntoTable(Table *table, long int addr, Page page, Queue *fifoQueue, SecondChanceQueue *secondChanceQueue /*unsigned int pageId*/)
+{
     long int pageIndex = pageIndexOnTable(table, page.id);
     time_t now = time(NULL);
 
-    //printf("\n\n\n***************** %d %d %d *****************\n\n\n", pageIndex, table->occupiedSlotsQuantity, table->maxSlotsQuantity);
-    if (pageIndex == -1) {
-        if(table->occupiedSlotsQuantity == table->maxSlotsQuantity) {
-            //printf("\nPAGE_FAUT_AND_SUBSTITUTION\n");
+    // printf("\n\n\n***************** %d %d %d *****************\n\n\n", pageIndex, table->occupiedSlotsQuantity, table->maxSlotsQuantity);
+    if (pageIndex == -1)
+    {
+        if (table->occupiedSlotsQuantity == table->maxSlotsQuantity)
+        {
+            // printf("\nPAGE_FAUT_AND_SUBSTITUTION\n");
             return PAGE_FAUT_AND_SUBSTITUTION;
         }
 
-        
         insertPageInTable(table, page, addr, -1);
+        enqueue(fifoQueue, page);
+        enqueueSecondChanceQueue(secondChanceQueue, page);
         return PAGE_FAULT;
     }
 
@@ -66,10 +71,10 @@ int writeIntoTable(Table *table, long int addr, Page page/*unsigned int pageId*/
     return OPERATION_CONCLUDED;
 }
 
-int readFromTable(Table *table, long int addr, Page page/*unsigned int pageId*/)
+int readFromTable(Table *table, long int addr, Page page, Queue *fifoQueue, SecondChanceQueue *secondChanceQueue /*unsigned int pageId*/)
 {
     long int pageIndex = pageIndexOnTable(table, page.id);
-    //printf("\nADDR: %ld\n", addr);
+    // printf("\nADDR: %ld\n", addr);
     if (pageIndex == -1)
     {
         if (table->occupiedSlotsQuantity == table->maxSlotsQuantity)
@@ -77,6 +82,8 @@ int readFromTable(Table *table, long int addr, Page page/*unsigned int pageId*/)
             return PAGE_FAUT_AND_SUBSTITUTION;
         }
         insertPageInTable(table, page, addr, -1);
+        enqueue(fifoQueue, page);
+        enqueueSecondChanceQueue(secondChanceQueue, page);
         return PAGE_FAULT;
     }
 
@@ -99,11 +106,14 @@ long int pageIndexOnTable(Table *table, long int pageId)
     return index;
 }
 
-void insertPageInTable(Table *table, Page page, long int addr, long int pos) {
+void insertPageInTable(Table *table, Page page, long int addr, long int pos)
+{
     table->totalAccesses++;
 
-    if(pos == -1) {
-        if(table->occupiedSlotsQuantity < table->maxSlotsQuantity) {
+    if (pos == -1)
+    {
+        if (table->occupiedSlotsQuantity < table->maxSlotsQuantity)
+        {
             freeLinkedList(table->pages[table->occupiedSlotsQuantity].addrs);
             table->pages[table->occupiedSlotsQuantity] = page;
             table->pages[table->occupiedSlotsQuantity].lastAccess = table->totalAccesses;
@@ -122,13 +132,13 @@ void insertPageInTable(Table *table, Page page, long int addr, long int pos) {
     return;
 }
 
-long int findPageIndex(Table *table, Page *page)
+long int findPageIndex(Table *table, Page page)
 {
     long int index = -1;
 
     for (long int i = 0; i < table->occupiedSlotsQuantity; i++)
     {
-        if (table->pages[i].id == page->id)
+        if (table->pages[i].id == page.id)
         {
             index = i;
         }
@@ -137,9 +147,12 @@ long int findPageIndex(Table *table, Page *page)
     return index;
 }
 
-void freeTablePages(Table *table) {
-    for(long int i=0; i<table->maxSlotsQuantity; i++) {
-        if(table->pages[i].id > -1) {
+void freeTablePages(Table *table)
+{
+    for (long int i = 0; i < table->maxSlotsQuantity; i++)
+    {
+        if (table->pages[i].id > -1)
+        {
             freeLinkedList(table->pages[i].addrs);
         }
     }
